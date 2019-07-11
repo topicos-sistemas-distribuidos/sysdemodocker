@@ -25,7 +25,6 @@
                 <tr>
                     <th>Id</th>
                     <th>Nome</th>
-                    <th>Path</th>
                     <th>Imagem</th>
                     <th>Ações</th>
                 </tr>
@@ -33,7 +32,6 @@
                 	<input id="id" name="id" th:value="${row.id}" type="hidden" />
                 	<td th:text="${row.id}"></td>                	
                     <td th:text="${row.name}"></td>
-                    <td th:text="${row.path}"></td>
                     <td><img alt="Image" th:src="${'/upload/picture/'+row.systemName}" width="100" height="100" /></td>
                     <td>
                         <a href="#">Editar</a>            

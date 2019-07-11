@@ -20,7 +20,6 @@
         <div class="box-body no-padding">
             <table class="table table-striped">
                 <tr>
-                    <th>User name</th>
                     <th>Nome</th>
                     <th>E-mail</th>
                     <th>Ativo</th>
@@ -30,7 +29,6 @@
                 <tr th:each="row : ${list}">              
                 	<div th:if="${row.id != loginuserid}">
                 		<input id="id" name="id" th:value="${row.id}" type="hidden" />											
-						<td th:text="${row.username}"></td>
 						<td th:text="${row.person.name}"></td> 
 						<td th:text="${row.email}"></td>
 						<td th:text="${row.enabled}"></td>
