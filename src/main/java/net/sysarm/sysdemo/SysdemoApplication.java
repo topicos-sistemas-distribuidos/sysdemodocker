@@ -7,9 +7,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import net.sysarm.sysdemo.util.Constantes;
 
+/**
+ * Classe principal da aplicacao
+ */
 @SpringBootApplication
 public class SysdemoApplication {
 	
+	/**
+	 * metodo principal que carrega a aplicacao
+	 */
 	public static void main(String[] args) {
 		new Constantes();
 		String mainPath = "TBD";
@@ -34,6 +40,5 @@ public class SysdemoApplication {
 		
 		SpringApplication.run(SysdemoApplication.class, args);
 	}
-
 
 }

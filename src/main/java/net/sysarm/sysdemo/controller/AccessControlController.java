@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -97,9 +98,12 @@ public class AccessControlController {
     @RequestMapping("/accesscontrol/users/edit/{id}")
     public String editUserAuthority(@PathVariable Long id, Model model) {
 		Users editUser = userService.get(id);
+		List<Role> authoritiesList = this.authoritiesService.getListAll();
+		
 		checkUser();
 		
         model.addAttribute("user", editUser);
+        model.addAttribute("authoritieslist", authoritiesList);
         model.addAttribute("loginusername", loginUser.getUsername());
     	model.addAttribute("loginemailuser", loginUser.getEmail());
     	model.addAttribute("loginuserid", loginUser.getId());
@@ -116,23 +120,34 @@ public class AccessControlController {
      * @return página que lista todos os usuários
      */
     @RequestMapping(value = "/accesscontrol/users/saveedited", method = RequestMethod.POST)
-    public String saveEdited(Users user, @RequestParam("nome") String authority, final RedirectAttributes ra) { 
-    	Users userEdited = this.userService.get(user.getId());  	
-    	List<Role> roles = new LinkedList<>();		
-		     	
-    	switch (authoritiesService.checkAuthority(authority)) {
-		case "USER":
-			roles.add(authoritiesService.getRoleByNome("USER"));
-			userEdited.setRoles(roles);
-			break;
-		default:
-			ra.addFlashAttribute("errorFlash", "A permissão não está registrada no sistema!");
-			break;
-		}
+    public String saveEdited(Users user, @RequestParam("checkMyPermissoes") String authority, final RedirectAttributes ra, ModelMap model) { 
+    	List<Role> roles = new LinkedList<Role>();
+    	//Recupera o usuário editado
+    	Users userEdited = this.userService.get(user.getId());     	    	   	
     	
-		this.userService.save(userEdited);					
-        ra.addFlashAttribute("successFlash", "As permissões do Usuário " + userEdited.getUsername() + " foram alteradas com sucesso.");
-          				
+    	if (authority != null) {
+        	//faz o split da string authority e guarda em um array de String
+        	String[] myPermissoes = authority.split(",");
+
+    		//para cada elemento busca a role correspondente
+    		for (String elemento : myPermissoes) {
+    			Role myRole;
+    			myRole = this.authoritiesService.getRoleByNome(elemento);  
+    			roles.add(myRole);
+    		}
+
+    		//atualiza os dados do usuário editado
+    		userEdited.setEmail(user.getEmail());
+    		userEdited.setEnabled(user.isEnabled());    	
+    		userEdited.setRoles(roles);
+
+    		this.userService.save(userEdited);					
+    		ra.addFlashAttribute("successFlash", "As permissões " + authority + " do Usuário " + userEdited.getUsername() + " foram alteradas com sucesso.");    		
+    	}
+    	else {
+    		ra.addFlashAttribute("errorFlash", "A permissão não está registrada no sistema!");
+    	}
+       	          				
         return "redirect:/accesscontrol/users";
     }
     
