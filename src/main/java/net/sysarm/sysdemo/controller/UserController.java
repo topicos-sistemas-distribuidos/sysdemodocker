@@ -3,10 +3,14 @@ package net.sysarm.sysdemo.controller;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -61,12 +65,22 @@ public class UserController {
 	}
 	
 	/**
-	 * Lista todos os usuarios cadastrados
+	 * Lista os usuarios da primeira pagina cadastrados 
 	 * @param model
 	 * @return pagina com todos os usuarios cadastrados
 	 */
 	@RequestMapping(value = "/users")
 	public String index(Model model){
+		return "redirect:/users/1";
+	}
+
+	/**
+	 * Lista todos os usuarios paginados cadastrados
+	 * @param model
+	 * @return pagina com todos os usuarios cadastrados
+	 */
+	@RequestMapping(value = "/users/all")
+	public String all(Model model){
     	List<Users> list = userService.getAll();
     	checkUser();
     	
@@ -77,9 +91,9 @@ public class UserController {
       	
     	model.addAttribute("list", list);
 		
-		return "users/list";
+		return "users/listAllUsers";
 	}
-	
+
 	/**
 	 * Faz a paginação da lista de usuários cadastrado
 	 * @param pageNumber
@@ -115,15 +129,15 @@ public class UserController {
     @RequestMapping("/users/add")
     public String add(Model model) {
     	checkUser();
-    	
-        model.addAttribute("user", new Users());
+    	Users user = new Users();
+        model.addAttribute("user", user);
         model.addAttribute("loginusername", loginUser.getUsername());
     	model.addAttribute("loginemailuser", loginUser.getEmail());
     	model.addAttribute("loginuserid", loginUser.getId());
     	model.addAttribute("loginuser", loginUser);
     	
         return "users/form";
-    }
+    }    
 
     /**
      * Edita um usuário selecionado
@@ -202,37 +216,70 @@ public class UserController {
      * @return pagina de usuarios com o novo usuario
      */
     @RequestMapping(value = "/users/save", method = RequestMethod.POST)
-    public String save(Users user, @RequestParam("password") String password, 
+    public String save(@Valid @ModelAttribute("user") Users user, BindingResult bindingResult, @RequestParam("password") String password, 
     		@RequestParam("confirmpassword") String confirmPassword, 
     		@RequestParam("nome") String authority, 
-    		final RedirectAttributes ra) {
+    		final RedirectAttributes ra, Model model) {
     	String senhaCriptografada;
     	List<Role> roles = new LinkedList<>();		
-    	
-    	switch (authoritiesService.checkAuthority(authority)) {
-		case "USER":
-			roles.add(authoritiesService.getRoleByNome("USER"));
-			user.setRoles(roles);
-			break;
-		default:
-			ra.addFlashAttribute("errorFlash", "A permissão não está registrada no sistema!");
-			break;
+
+    	/**
+    	 * Caso exista algum erro de entrada de dados vai para a página de listagem de usuários
+    	 */
+    	if (bindingResult.hasErrors()) {
+    		checkUser();
+            model.addAttribute("loginusername", loginUser.getUsername());
+        	model.addAttribute("loginemailuser", loginUser.getEmail());
+        	model.addAttribute("loginuserid", loginUser.getId());
+        	model.addAttribute("loginuser", loginUser);
+    		return "users/form";
+    	}
+
+    	String username = user.getUsername();
+		String emailUser = user.getEmail();
+		Users userExists = this.userService.getUserByUserName(username);
+		Users emailExists = this.userService.getUserByEmail(emailUser);
+		
+		//TODO melhorar o tratamento de checagem de usuario e/ou e-mail existente 
+		if ((userExists != null) || (emailExists != null)) {			
+    		checkUser();
+            model.addAttribute("loginusername", loginUser.getUsername());
+        	model.addAttribute("loginemailuser", loginUser.getEmail());
+        	model.addAttribute("loginuserid", loginUser.getId());
+        	model.addAttribute("loginuser", loginUser);
+        	ra.addFlashAttribute("errorFlash", "Usuário " + username +  " ou conta de e-mail " +  emailUser+ " já existe!");
+        	return "redirect:/users";			
+		}else {
+			/*
+			 * Checa o tipo do usuário
+			 * O usuário básico é o USER
+			 */
+			switch (authoritiesService.checkAuthority(authority)) {
+			case "USER":
+				roles.add(authoritiesService.getRoleByNome("USER"));
+				user.setRoles(roles);
+				break;
+			default:
+				ra.addFlashAttribute("errorFlash", "A permissão não está registrada no sistema!");
+				break;
+			}
+
+			if (password.equals(confirmPassword)){
+				senhaCriptografada = new GeradorSenha().criptografa(password);
+				user.setPassword(senhaCriptografada);
+				//Criar uma pessoa vazia e associa ao novo usuário
+				Person person = new Person();
+				person.setUser(user);
+
+				user.setPerson(person);
+				Users save = userService.save(user);
+				ra.addFlashAttribute("successFlash", "Usuário foi salvo com sucesso.");
+			}else{
+				ra.addFlashAttribute("errorFlash", "A senha do usuário NÃO confere.");
+			}  
+
+			return "redirect:/users";
 		}
-    	
-    	if (password.equals(confirmPassword)){
-        	senhaCriptografada = new GeradorSenha().criptografa(password);
-        	user.setPassword(senhaCriptografada);
-        	//Criar uma pessoa vazia e associa ao novo usuário
-        	Person person = new Person();
-        	person.setUser(user);
-        	
-        	user.setPerson(person);
-            Users save = userService.save(user);
-            ra.addFlashAttribute("successFlash", "Usuário foi salvo com sucesso.");
-    	}else{
-            ra.addFlashAttribute("errorFlash", "A senha do usuário NÃO confere.");
-    	}    	
-    	return "redirect:/users";
     }
     
     /**
@@ -264,22 +311,16 @@ public class UserController {
         		String novaSenhaCriptografada = new GeradorSenha().criptografa(newPassword);
         		user.setPassword(novaSenhaCriptografada);
                 Users save = userService.save(user);
-                ra.addFlashAttribute("successFlash", "Usuário " + user.getUsername() + " foi alterado com sucesso.");  		
+                ra.addFlashAttribute("successFlash", "Usuário " + user.getUsername() + " foi alterado com sucesso.");
+                
         	}else{
         		ra.addFlashAttribute("errorFlash", "A senha informada é diferente da senha original.");
         	}
     	}
     	else{
-            ra.addFlashAttribute("errorFlash", "A nova senha não foi confirmada.");
+            ra.addFlashAttribute("errorFlash", "A nova senha não foi confirmada."); 
     	}
-    	
-    	if (this.mySessionInfo.getAcesso().equals("ADMIN")) {
-    		local = "/users";
-    	}else {
-    		local = "/";
-    	}
-    	
-    	return "redirect:"+local;
+    	return "redirect:/users/edit/profile/"+user.getId();
     }
 
     /**
@@ -310,13 +351,7 @@ public class UserController {
     	this.personService.update(person);
 		ra.addFlashAttribute("successFlash", "Os dados pessoais do " + person.getUser().getUsername() + " foram alterados com sucesso.");
     	
-		if (this.mySessionInfo.getAcesso().equals("ADMIN")) {
-    		local = "/users";
-    	}else {
-    		local = "/";
-    	}
-    	
-    	return "redirect:"+local;
+		return "redirect:/users/edit/profile/"+person.getUser().getId();		
     }
 
     
@@ -402,10 +437,13 @@ public class UserController {
     		final RedirectAttributes ra) {
 		
 		String username = user.getUsername();
+		String emailUser = user.getEmail();
 		Users userExists = this.userService.getUserByUserName(username);
+		Users emailExists = this.userService.getUserByEmail(emailUser);
 		
-		if (userExists != null) {			
-			ra.addFlashAttribute("msgerro", "Usuário já existe!");
+		//TODO: melhorar o tratamento de checagem de usuário ou e-mail existente
+		if ((userExists != null) || (emailExists != null)) {			
+			ra.addFlashAttribute("msgerro", "Usuário ou e-mail já existe!");
 			return "redirect:/register";
 		}else {	
 			//checa a senha do usuário 			

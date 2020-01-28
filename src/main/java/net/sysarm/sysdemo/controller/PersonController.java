@@ -1,7 +1,5 @@
 package net.sysarm.sysdemo.controller;
 
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +8,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import net.sysarm.sysdemo.model.Person;
 import net.sysarm.sysdemo.model.Picture;
 import net.sysarm.sysdemo.model.Users;
 import net.sysarm.sysdemo.service.PersonService;
 import net.sysarm.sysdemo.service.PictureService;
 import net.sysarm.sysdemo.service.UsersService;
-import net.sysarm.sysdemo.util.ManipuladorDatas;
 import net.sysarm.sysdemo.util.MySessionInfo;
 
 /**

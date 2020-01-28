@@ -1,6 +1,5 @@
 package net.sysarm.sysdemo.model;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 

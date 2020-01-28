@@ -24,14 +24,11 @@ public class DashboardController {
 	
 	private UsersService userService;
 	private String acesso;
-	private PictureService pictureService;
-	
 	@Autowired
 	private MySessionInfo mySessionInfo;
-	
+
 	@Autowired
 	public void setPictureService(PictureService pictureService) {
-		this.pictureService = pictureService;
 	}
 	
 	@Autowired
@@ -75,10 +72,7 @@ public class DashboardController {
     @RequestMapping("/dashboard/admin")
     public String indexAdmin(Model model, Principal principal) {
     	int totalUsers=0;
-    	int totalComments=0;
-    	int totalPictures=0;
-    	int totalPosts=0;
-    	
+    	int totalPictures = 0;
     	totalUsers = (int) this.userService.count();
     	
     	Users loginUser = userService.getUserByUserName(mySessionInfo.getCurrentUser().getUsername());
@@ -114,10 +108,7 @@ public class DashboardController {
     @RequestMapping("/dashboard/user")
     public String indexUser(Model model, Principal principal) {    	    	
     	int totalUsers = (int) this.userService.count();    
-    	int totalComments=0;
-    	int totalPictures=0;
-    	int totalPosts=0;
-
+    	int totalPictures = 0;
     	Users loginUser = mySessionInfo.getCurrentUser();
 
     	totalPictures = loginUser.getPerson().getPictures().size();
