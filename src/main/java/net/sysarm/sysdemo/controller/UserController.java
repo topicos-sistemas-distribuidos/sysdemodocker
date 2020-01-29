@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import net.sysarm.sysdemo.exception.UserAlreadyExistsException;
+import net.sysarm.sysdemo.exception.UserNotFoundException;
 import net.sysarm.sysdemo.model.Person;
 import net.sysarm.sysdemo.model.Picture;
 import net.sysarm.sysdemo.model.Role;
@@ -242,13 +244,7 @@ public class UserController {
 		
 		//TODO melhorar o tratamento de checagem de usuario e/ou e-mail existente 
 		if ((userExists != null) || (emailExists != null)) {			
-    		checkUser();
-            model.addAttribute("loginusername", loginUser.getUsername());
-        	model.addAttribute("loginemailuser", loginUser.getEmail());
-        	model.addAttribute("loginuserid", loginUser.getId());
-        	model.addAttribute("loginuser", loginUser);
-        	ra.addFlashAttribute("errorFlash", "Usuário " + username +  " ou conta de e-mail " +  emailUser+ " já existe!");
-        	return "redirect:/users";			
+			throw new UserAlreadyExistsException("Usuário já existe!");
 		}else {
 			/*
 			 * Checa o tipo do usuário
@@ -278,7 +274,7 @@ public class UserController {
 				ra.addFlashAttribute("errorFlash", "A senha do usuário NÃO confere.");
 			}  
 
-			return "redirect:/users";
+			return "redirect:/users/1";
 		}
     }
     

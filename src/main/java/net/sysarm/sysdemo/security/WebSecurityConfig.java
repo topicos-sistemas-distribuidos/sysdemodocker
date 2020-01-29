@@ -39,7 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.sessionManagement()
 		  .sessionFixation().migrateSession();
     	
-    	http.authorizeRequests()   
+        http.authorizeRequests()                  
                 .antMatchers("/bootstrap/**").permitAll()
                 .antMatchers("/dist/**").permitAll()
                 .antMatchers("/plugins/**").permitAll()
@@ -54,6 +54,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/db/**").access("hasRole('ADMIN') and hasRole('DBA')")
                 .antMatchers("/dashboard/admin").hasAnyAuthority("ADMIN")
                 .antMatchers("/dashboard/user").hasAnyAuthority("USER")
+                .antMatchers("/metrics").hasAnyAuthority("ADMIN")
+                .antMatchers("/info").hasAnyAuthority("ADMIN")
+                .antMatchers("/health").hasAnyAuthority("ADMIN")
+                .antMatchers("/beans").hasAnyAuthority("ADMIN")
+                .antMatchers("/trace").hasAnyAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and()
             .formLogin()

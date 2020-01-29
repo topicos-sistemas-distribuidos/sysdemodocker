@@ -40,7 +40,32 @@ public class DashboardController {
 	public String login() {
 		return "login";
 	}
+
+	@RequestMapping("/metrics")
+	public String metrics(){
+		return "redirect:/metrics";
+	}
+
+	@RequestMapping("/info")
+	public String info(){
+		return "redirect:/info";
+	}
 	
+	@RequestMapping("/health")
+	public String health(){
+		return "redirect:/health";
+	}
+
+	@RequestMapping("/beans")
+	public String beans(){
+		return "redirect:/beans";
+	}
+
+	@RequestMapping("/trace")
+	public String trace(){
+		return "redirect:/trace";
+	}
+
 	/**
 	 * Verifica quais são as permissões do usuário logado e direciona para o dashboard correto
 	 * @param model
