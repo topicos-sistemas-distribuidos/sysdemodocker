@@ -8,9 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import net.sysarm.sysdemo.model.Person;
 import net.sysarm.sysdemo.model.Users;
-import net.sysarm.sysdemo.service.PictureService;
 import net.sysarm.sysdemo.service.UsersService;
 import net.sysarm.sysdemo.util.MySessionInfo;
 
@@ -22,20 +20,12 @@ import net.sysarm.sysdemo.util.MySessionInfo;
 @Controller
 public class DashboardController {
 	
+	@Autowired
 	private UsersService userService;
 	private String acesso;
 	@Autowired
 	private MySessionInfo mySessionInfo;
-
-	@Autowired
-	public void setPictureService(PictureService pictureService) {
-	}
-	
-	@Autowired
-	public void setUserService(UsersService userService) {
-		this.userService = userService;
-	}
-	
+		
     @RequestMapping("/login")
 	public String login() {
 		return "login";
@@ -64,6 +54,28 @@ public class DashboardController {
 	@RequestMapping("/trace")
 	public String trace(){
 		return "redirect:/trace";
+	}
+
+	/**
+	 * Atualiza os atributos do Dashboard
+	 * @param model
+	 * @param totalUsers
+	 * @param totalPictures
+	 * @param loginUser
+	 * @param listUsers
+	 * @return model com os atributos carregado
+	 */
+	private Model setDashboardAttributes(Model model, int totalUsers, int totalPictures, Users loginUser, List<Users> listUsers) {
+		model.addAttribute("totalUsers", totalUsers);
+    	model.addAttribute("totalPictures", totalPictures);
+    	model.addAttribute("listUsers", listUsers);
+    	model.addAttribute("loginusername", loginUser.getUsername());
+    	model.addAttribute("loginemailuser", loginUser.getEmail());
+    	model.addAttribute("loginuserid", loginUser.getId());
+    	model.addAttribute("person", loginUser.getPerson());
+    	model.addAttribute("acesso", acesso);
+		model.addAttribute("loginuser", loginUser);
+		return model;
 	}
 
 	/**
@@ -98,28 +110,13 @@ public class DashboardController {
     public String indexAdmin(Model model, Principal principal) {
     	int totalUsers=0;
     	int totalPictures = 0;
-    	totalUsers = (int) this.userService.count();
-    	
-    	Users loginUser = userService.getUserByUserName(mySessionInfo.getCurrentUser().getUsername());
-    	
+    	totalUsers = (int) this.userService.count();    	
+    	Users loginUser = userService.getUserByUserName(mySessionInfo.getCurrentUser().getUsername());    	
     	totalPictures = loginUser.getPerson().getPictures().size();
+    	acesso = mySessionInfo.getAcesso();    	
+    	List<Users> listUsers = this.userService.getAll();    
     	
-    	acesso = mySessionInfo.getAcesso();
-    	
-    	List<Users> listUsers = this.userService.getAll();
-    	
-    	Person person = loginUser.getPerson();
-    	
-    	    	
-    	model.addAttribute("totalUsers", totalUsers);
-    	model.addAttribute("totalPictures", totalPictures);
-    	model.addAttribute("listUsers", listUsers);
-    	model.addAttribute("loginusername", loginUser.getUsername());
-    	model.addAttribute("loginemailuser", loginUser.getEmail());
-    	model.addAttribute("loginuserid", loginUser.getId());
-    	model.addAttribute("person", loginUser.getPerson());
-    	model.addAttribute("acesso", acesso);
-    	model.addAttribute("loginuser", loginUser);
+    	model = setDashboardAttributes(model, totalUsers, totalPictures, loginUser, listUsers);
     	     	
         return "dashboard/index";
     }
@@ -128,30 +125,18 @@ public class DashboardController {
      * Carrega o dashboard do usuário comum
      * @param model
      * @param principal
-     * @return
+     * @return página com as funções disponíveis para o usuário comum
      */
     @RequestMapping("/dashboard/user")
     public String indexUser(Model model, Principal principal) {    	    	
     	int totalUsers = (int) this.userService.count();    
     	int totalPictures = 0;
     	Users loginUser = mySessionInfo.getCurrentUser();
-
     	totalPictures = loginUser.getPerson().getPictures().size();
-    	
     	acesso = mySessionInfo.getAcesso();
-    	
     	List<Users> listUsers = this.userService.getAll();
 
-    	model.addAttribute("totalUsers", totalUsers);
-    	model.addAttribute("totalPictures", totalPictures);
-    	model.addAttribute("listUsers", listUsers);
-    	model.addAttribute("loginusername", loginUser.getUsername());
-    	model.addAttribute("loginemailuser", loginUser.getEmail());
-    	model.addAttribute("loginuserid", loginUser.getId());
-    	model.addAttribute("totalUsers", totalUsers);
-    	model.addAttribute("person", loginUser.getPerson());
-    	model.addAttribute("acesso", acesso);
-    	model.addAttribute("loginuser", loginUser);
+		model = setDashboardAttributes(model, totalUsers, totalPictures, loginUser, listUsers);
     	
         return "dashboard/indexUser";
     }

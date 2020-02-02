@@ -25,6 +25,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
 	private UsersService userService;
 
+    /**
+     * Carrega as configurações de segurança
+     */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
     	http.sessionManagement()
@@ -76,6 +79,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
            	    	
     }
 
+    /**
+     * Faz a configuração de autenticação da aplicação
+     * @param auth AuthenticationManagerBuilder gerenciador de autenticação
+     * @throws Exception é levantada caso ocorra algum erro
+     */
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
     	auth.userDetailsService(this.userService)

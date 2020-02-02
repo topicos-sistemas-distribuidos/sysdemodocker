@@ -18,7 +18,6 @@ import net.sysarm.sysdemo.service.UsersService;
 @Component
 @Scope(value="session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class MySessionInfo {
-
     private Users user;
 	private UsersService userService;
 	private String acesso;
@@ -61,7 +60,7 @@ public class MySessionInfo {
      * @return
      */
     public boolean hasRole(String role) {	
-    	boolean hasRole = false;
+    	boolean checkHasRole = false;
 
     	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     	
@@ -72,20 +71,20 @@ public class MySessionInfo {
         	if (authorities != null) {  
 
         		for (GrantedAuthority authority : authorities) {
-        			hasRole = authority.getAuthority().equals(role);
-        			if (hasRole) {
+        			checkHasRole = authority.getAuthority().equals(role);
+        			if (checkHasRole) {
         				break;
         			}
         		}
 
-        		return hasRole;
+        		return checkHasRole;
         	}	
     	}
     	else {
     		return false;
     	}
 		
-    	return hasRole;
+    	return checkHasRole;
     }  
     
     /**
@@ -99,7 +98,11 @@ public class MySessionInfo {
  	   }
     }
 
-	public String getAcesso() {
+    /**
+     * Checa o acesso do usuario
+     * @return acesso ADMIN ou ""
+     */
+	public String getAcesso() { // NOPMD by armandosoaressousa on 1/30/20 5:44 PM
 		return checkAccessControl();
 	}
     

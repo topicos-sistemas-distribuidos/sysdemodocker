@@ -19,20 +19,20 @@ public class SysdemoApplication implements ApplicationRunner, CommandLineRunner{
 	//@Value("${spring.application.name}")
 	//String name;
 	@Value("${spring.datasource.url}")
-	String datasource;
+	private String datasource;
 	/**
 	 * metodo principal que carrega a aplicacao
 	 */
 	public static void main(String[] args) {
 		new Constantes();
-		String mainPath = "TBD";
-		String uploadsPath = Constantes.uploadDirectory;
-		String picturesPath = Constantes.picturesDirectory;
-		String banco = "TBD";
-		String portaBanco = "TBD";
-		String ipServidor = "TBD";
-		String ipServidorBD = "TBD";
-		String portaSA = "TBD";
+		final String mainPath = "TBD";
+		final String uploadsPath = Constantes.UPLOAD_DIRECTORY;
+		final String picturesPath = Constantes.PICTURES_DIRECTORY;
+		final String banco = "TBD";
+		final String portaBanco = "TBD";
+		final String ipServidor = "TBD";
+		final String ipServidorBD = "TBD";
+		final String portaSA = "TBD";
 
 		System.out.println("Diretório principal: " + mainPath);
 		System.out.println("Diretório de controle de uploads: " + uploadsPath);
@@ -48,6 +48,9 @@ public class SysdemoApplication implements ApplicationRunner, CommandLineRunner{
 		SpringApplication.run(SysdemoApplication.class, args);
 	}
 
+	/**
+	 * Executa comandos logo após a aplicação ser carregada
+	 */
 	@Override
 	public void run(ApplicationArguments arg0) throws Exception {
 		System.out.println("Comandos executados após a inicialização da aplicação");
@@ -63,6 +66,9 @@ public class SysdemoApplication implements ApplicationRunner, CommandLineRunner{
 
 	}
 
+	/**
+	 * Executa os comandos a partir da linha de comando de iniialização da aplicação via prompt de commando
+	 */
 	@Override
 	public void run(String... arg0) throws Exception {
 		System.out.println("Executa os comandos a partir da linha de comando de iniialização da aplicação via prompt de commando");

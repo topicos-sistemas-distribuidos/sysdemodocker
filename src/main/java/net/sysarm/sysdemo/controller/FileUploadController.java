@@ -170,7 +170,7 @@ public class FileUploadController {
 	public String upload(@PathVariable(value = "idUser") Long idUser, Model model,@RequestParam("photouser") MultipartFile[] files) {
 		StringBuilder fileNames = new StringBuilder();
 		new Constantes();
-		String uploadFilePath = Constantes.uploadUserDirectory; 	  
+		String uploadFilePath = Constantes.UPLOAD_USER_DIRECTORY; 	  
 		String idAux = String.valueOf(idUser);
 
 		for (MultipartFile file : files) {
@@ -208,7 +208,7 @@ public class FileUploadController {
 		StringBuilder fileNames = new StringBuilder();
 
 		new Constantes();
-		String uploadFilePath = Constantes.picturesDirectory; 	  
+		String uploadFilePath = Constantes.PICTURES_DIRECTORY; 	  
 		String idAux = String.valueOf(personId);
 		String padrao = "yyyy/MM/dd HH:mm:ss";
 		
@@ -269,7 +269,7 @@ public class FileUploadController {
 	@ResponseBody
 	public byte[] getPicture(@PathVariable(value = "pictureName") String imageName) throws IOException {
 		new Constantes();
-		String uploadFilePath = Constantes.picturesDirectory;
+		String uploadFilePath = Constantes.PICTURES_DIRECTORY;
 
 		File serverFile = new File(uploadFilePath + FileSystems.getDefault().getSeparator() + imageName + ".png");
 		
@@ -291,7 +291,7 @@ public class FileUploadController {
 	@ResponseBody
 	public byte[] getUserImage(@PathVariable(value = "imageName") String imageName) throws IOException {
 		new Constantes();
-		String uploadFilePath = Constantes.uploadUserDirectory;
+		String uploadFilePath = Constantes.UPLOAD_USER_DIRECTORY;
 
 		File serverFile = new File(uploadFilePath + FileSystems.getDefault().getSeparator() + imageName + ".png");      
 		File userPadrao = new File(uploadFilePath + FileSystems.getDefault().getSeparator() + "anonymous2.png");
@@ -309,7 +309,7 @@ public class FileUploadController {
 	@ResponseBody
 	public byte[] getImage(@PathVariable(value = "imageName") String imageName) throws IOException {
 		new Constantes();
-		String uploadFilePath = Constantes.uploadDirectory;
+		String uploadFilePath = Constantes.UPLOAD_DIRECTORY;
 
 		File serverFile = new File(uploadFilePath + FileSystems.getDefault().getSeparator() + imageName + ".png");
 		return Files.readAllBytes(serverFile.toPath());
