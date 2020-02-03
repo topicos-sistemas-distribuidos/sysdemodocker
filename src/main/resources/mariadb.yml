@@ -1,0 +1,16 @@
+# Use root/skyinfo as user/password credentials
+version: '3.1'
+
+services:
+
+  db:
+    image: mariadb
+    restart: always
+    ports:
+        - '3307'
+    expose:
+        # Opens port 3306 on the container
+        - '3306'
+    environment:
+      MYSQL_DATA_BASE: dbsysmodelo
+      MYSQL_ROOT_PASSWORD: skyinfo
