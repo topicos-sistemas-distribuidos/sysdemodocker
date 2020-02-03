@@ -4,6 +4,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Classe que manipula transformações de datas
+ */
 public class ManipuladorDatas {	
 	/**
 	 * Retorna a data e tempo corrente
@@ -14,19 +17,18 @@ public class ManipuladorDatas {
 		DateFormat dateFormat = new SimpleDateFormat(padrao);
 		Date date = new Date();
 		
-		return (dateFormat.format(date)); 
+		return dateFormat.format(date); 
 	}
 
 	public static String getFormattedDataTime(String padrao, Date date) {
 		DateFormat dateFormat = new SimpleDateFormat(padrao);
 		
-		return (dateFormat.format(date)); 
+		return dateFormat.format(date); 
 	}
 
 	
 	public static Date getDate() {
-		Date date = new Date();
-		return date;
+		return (new Date()); // NOPMD by armandosoaressousa on 1/30/20 5:49 PM
 	}
 	
 	public boolean dateIsBetweenDates(Date d, Date min, Date max) {
