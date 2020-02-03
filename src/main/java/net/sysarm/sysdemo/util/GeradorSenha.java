@@ -7,9 +7,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  * @author armandosoaressousa
  *
  */
-public class GeradorSenha {
-	
-	BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();  
+public class GeradorSenha {	
+	private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();  
 	
 	/**
 	 * Criptografa senha baseeada no padrão BCryptPasswordEncoder
@@ -24,7 +23,7 @@ public class GeradorSenha {
 	 * Compara a senha criptografada do banco com a senha passada
 	 * @param password senha passada
 	 * @param senhaCriptografada senha cripgrafada guardada no banco
-	 * @return
+	 * @return true se as senhas forem iguais
 	 */
 	public boolean comparaSenhas(String password, String senhaCriptografada){
 		return encoder.matches(password, senhaCriptografada);

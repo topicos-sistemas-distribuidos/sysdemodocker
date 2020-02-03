@@ -32,7 +32,7 @@ public class UsersService extends AbstractService<Users, Long> implements UserDe
 	 * @param username do usuario
 	 * @return usuario
 	 */
-	public Users getUserByUserName(String username) {
+	public Users getUserByUserName(String username){
 		return usersRepository.findByUsername(username);
 	}
 	
@@ -41,7 +41,7 @@ public class UsersService extends AbstractService<Users, Long> implements UserDe
 	 * @param email do usuario
 	 * @return usuario 
 	 */
-	public Users getUserByEmail(String email) {
+	public Users getUserByEmail(String email){
 		return usersRepository.findByEmail(email);
 	}
 	
